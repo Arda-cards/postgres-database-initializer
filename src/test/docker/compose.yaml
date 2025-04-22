@@ -29,8 +29,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      sut:
-        condition: service_completed_successfully
     command: "postgresql://postgres:5432"
     volumes:
       - "${PWD}/src/test/docker/pgpass:/home/.pgpass"
@@ -40,8 +38,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      idempotency:
-        condition: service_completed_successfully
     command: [
       "psql",
       "-v", "ON_ERROR_STOP=on",
