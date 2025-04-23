@@ -1,0 +1,174 @@
+---
+name: ci
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '*'
+  pull_request:
+
+permissions: { }
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Configure git client"
+        shell: bash
+        run: |
+          [ "${{ runner.debug }}" == 1 ] && set -xv
+          set -u
+  
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - id: define-changelog-validation
+        name: "Is a release or a feature version needed?"
+        shell: bash
+        run: |
+          [ "${{ runner.debug }}" == 1 ] && set -xv
+          set -u
+  
+          function is_release_branch() {
+              if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+                  return 0
+              fi
+              return 1
+          }
+          function is_main_pull_request() {
+              if [ "${{ github.event_name }}" == "pull_request" ] \
+                  && [ "${{ github.event.pull_request.base.ref }}" == "main" ]; then
+                  return 0
+              fi
+              return 1
+          }
+          if is_release_branch || is_main_pull_request; then
+            echo "mode=release" >>"${GITHUB_OUTPUT}"
+          else
+            echo "mode=feature" >>"${GITHUB_OUTPUT}"
+          fi
+      - name: "Extract tag from the changelog"
+        uses: denisa/clq-action@v1
+        id: clq-extract
+        with:
+          changeMap: .github/clq/changemap.json
+          mode: ${{ steps.define-changelog-validation.outputs.mode }}
+      - id: define-build
+        name: "Is this a test or publish build"
+        shell: bash
+        run: |
+          [ "${{ runner.debug }}" == 1 ] && set -xv
+          set -u
+          
+          function is_release_branch() {
+              if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+                  return 0
+              fi
+              return 1
+          }
+          function is_feature_branch_version() {
+            # major.minor.patch-user-issue
+            # user and issue relaxed to be any alpha-numeric sequence 
+            if [[ "${{ steps.clq-extract.outputs.version }}" =~  ^[0-9]+(\.[0-9]+){2}(-[[:alnum:]]+){2}(-.+)?$ ]]; then
+              return 0
+            fi
+            return 1
+          }
+          function is_publishable_feature_branch() {
+            if ( [ "${{ github.event_name }}" == "push" ] && is_feature_branch_version ); then
+              return 0
+            fi
+            return 1
+          }
+          
+          if [ "${{ steps.define-changelog-validation.outputs.mode }}" == "release" ] \
+              && [ "${{ steps.clq-extract.outputs.status }}" != "released" ]; then
+            echo "::error ${{ steps.clq-extract.outputs.version }} is not a valid version for the default branch"
+            echo "# Version Validation Error" >>${GITHUB_STEP_SUMMARY}
+            echo "Main, or a pull-request to main, must have a release version." >>${GITHUB_STEP_SUMMARY}
+            echo "${{ steps.clq-extract.outputs.version }} is not valid" >>${GITHUB_STEP_SUMMARY}
+            exit 1
+          fi
+          
+          if is_release_branch || is_publishable_feature_branch; then
+            echo "kind=publish" >>"${GITHUB_OUTPUT}"
+          else
+            echo "kind=test" >>"${GITHUB_OUTPUT}"
+          fi
+      - id: tag
+        shell: bash
+        run: |
+          [ "${{ runner.debug }}" == 1 ] && set -xv
+          set -u
+          
+          function is_release_branch() {
+            if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+              return 0
+            fi
+              return 1
+          }
+          
+          if [ "${{ steps.define-build.outputs.kind }}" == "publish" ] && is_release_branch ; then
+            readonly tag="${{ steps.clq-extract.outputs.tag }}"
+            echo "Tagging ${tag}"
+            readonly workflow_run="${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
+            git tag -m "Released by ${{ github.job }}, ${workflow_run}" -a "${tag}"
+            git push origin "${tag}"
+            echo "tag=${tag}" >>"${GITHUB_OUTPUT}"
+          fi
+      - id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: src/main/docker
+          load: true
+          tags: arda-cards/postgres-database-initializer:latest
+      - id: test
+        run: |
+          docker compose -f src/test/docker/compose.yaml up --exit-code-from sut sut
+          docker compose -f src/test/docker/compose.yaml up --exit-code-from idempotency idempotency
+          docker compose -f src/test/docker/compose.yaml up --exit-code-from tester tester
+      - name: "Remove tag of failed build"
+        if: failure() && (steps.build.outcome == 'failure' || steps.test.outcome == 'failure')
+        shell: bash
+        run: |
+          [ "${{ runner.debug }}" == 1 ] && set -xv
+          set -u
+          
+          function is_release_branch() {
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+           return 0
+          fi
+           return 1
+          }
+          
+          if [ "${{ steps.define-build.outputs.kind }}" == "publish" ] && is_release_branch ; then
+          readonly tag="${{ steps.clq-extract.outputs.tag }}"
+          echo "Removing tag ${tag}"
+          git push --delete origin "${tag}"
+          fi
+      - name: Build and push
+        if: success() && ${{ steps.define-build.outputs.kind }} == publish
+        uses: docker/build-push-action@v6
+        with:
+          context: src/main/docker
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/arda-cards/postgres-database-initializer:${{ steps.clq-extract.outputs.version }}
+      - uses: ncipollo/release-action@v1
+        if: success() && steps.tag.outputs.tag
+        with:
+          tag: ${{ steps.tag.outputs.tag }}
+          prerelease: ${{ steps.clq-extract.outputs.status == 'prereleased' }}
+          name: ${{ steps.clq-extract.outputs.name }}
+          body: ${{ steps.clq-extract.outputs.changes }}
