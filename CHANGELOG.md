@@ -24,6 +24,7 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
 
 - Extracted the test sequence to `tests.sh` got local and remote execution
 - Silently ignore failure to make `.pgpass` read-only; while this is required for docker-compose, this is not needed for k8s 
+- Install only the postgres client package on a fresh alpine:3.22 image and reduce the image size from 358 to 22MB
 
 ## [1.0.0] - 2025-04-22
 
