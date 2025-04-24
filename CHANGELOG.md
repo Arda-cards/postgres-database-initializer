@@ -18,6 +18,12 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
+## [1.0.1] - 2025-04-24
+
+### Fixed
+
+- Extracted the test sequence to `tests.sh` got local and remote execution
+
 ## [1.0.0] - 2025-04-22
 
 ### Added

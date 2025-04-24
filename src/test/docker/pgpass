@@ -1,2 +1,2 @@
 # hostname:port:database:username:password
-postgres:5432:*:main-user:main-user-password
+*:*:*:main-user:main-user-password

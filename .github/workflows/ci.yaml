@@ -134,10 +134,8 @@ jobs:
           load: true
           tags: arda-cards/postgres-database-initializer:latest
       - id: test
-        run: |
-          docker compose -f src/test/docker/compose.yaml up --exit-code-from sut sut
-          docker compose -f src/test/docker/compose.yaml up --exit-code-from idempotency idempotency
-          docker compose -f src/test/docker/compose.yaml up --exit-code-from tester tester
+        run: ./tests.sh
+
       - name: "Remove tag of failed build"
         if: failure() && (steps.build.outcome == 'failure' || steps.test.outcome == 'failure')
         shell: bash

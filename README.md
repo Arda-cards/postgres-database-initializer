@@ -19,8 +19,8 @@ docker compose -f src/test/docker/compose.yaml up --renew-anon-volumes
 This will build the image if not present.
 
 Then inspect the log.
-See [Automate the test](https://github.com/Arda-cards/postgres-database-initializer/issues/2)
 
+The script `tests.sh` runs all the integration tests.
 
 # How to use
 
