@@ -23,6 +23,7 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
 ### Fixed
 
 - Extracted the test sequence to `tests.sh` got local and remote execution
+- Silently ignore failure to make `.pgpass` read-only; while this is required for docker-compose, this is not needed for k8s 
 
 ## [1.0.0] - 2025-04-22
 
