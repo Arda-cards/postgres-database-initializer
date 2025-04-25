@@ -18,13 +18,18 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
-## [1.0.1] - 2025-04-24
+## [2.0.0] - 2025-04-24
+
+### Changed
+
+- The container now accepts only `key=values` property files instead of a psql command file.
 
 ### Fixed
 
 - Extracted the test sequence to `tests.sh` got local and remote execution
 - Silently ignore failure to make `.pgpass` read-only; while this is required for docker-compose, this is not needed for k8s 
 - Install only the postgres client package on a fresh alpine:3.22 image and reduce the image size from 358 to 22MB
+- The database role is now always set to the concatenation of the database name with `_role`
 
 ## [1.0.0] - 2025-04-22
 

@@ -1,4 +1,4 @@
-SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'database_owner') as is_user_defined;
+SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'database_owner') AS is_user_defined;
 \gset
 
 \if :is_user_defined
@@ -6,12 +6,14 @@ SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'database_owner') as is_u
   \quit
 \endif
 
+\set database_role :database_name _role
+
 -- Create the user
 CREATE USER :database_owner WITH PASSWORD :'database_owner_password';
 
 -- Create the database
-create database :database_name
-  CONNECTION_LIMIT = 100
+CREATE DATABASE :database_name
+  CONNECTION_LIMIT = :connection_limit
   OWNER = :database_owner;
 
 -- Create a role with the required permissions
