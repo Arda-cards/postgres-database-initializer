@@ -30,6 +30,7 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
 - Silently ignore failure to make `.pgpass` read-only; while this is required for docker-compose, this is not needed for k8s 
 - Install only the postgres client package on a fresh alpine:3.22 image and reduce the image size from 358 to 22MB
 - The database role is now always set to the concatenation of the database name with `_role`
+- Ensure that images are published only on main or on a feature branch with a feature branch version
 
 ## [1.0.0] - 2025-04-22
 
