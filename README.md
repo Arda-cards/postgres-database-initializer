@@ -2,25 +2,47 @@
 
 Init container to create a Postgres database
 
-*Given* a Postgres connection string and the two files `.pgpass` and `values.properties`
+*Given* a Postgres connection string, `values.properties` and one of the two files `.pgenv` or `.pgpass`
 *When* the container runs with the two files mounted
 *Then* a database is created as configured by the `values.properties`
 
+## values.properties
 
-## PG Password
+A property file, it contains un-escaped values to define the database to be created.
 
-Mount the pgpass file at `/home/.pgpass`.
+Keys and values are separated with a `=`. Comment lines, starting with a `#`, are ignored.
 
-## Values
+| Property               | Required | Description                                    |
+|------------------------|----------|------------------------------------------------|
+| database_name          | yes      | Name of the database                           |
+| database_owner         | yes      | Name of the database owner                     |
+| database_owner_passwor | yes      | Password for the database owner                |
+| connection_limit       | no       | Initial connection cout limit, defaults to 100 |
 
-Mount the vales at `/home/values.properties`.
+Mount the file at `/home/values.properties`.
 
- Property               | Required | Description                                    
-------------------------|----------|------------------------------------------------
- database_name          | yes      | Name of tha database                           
- database_owner         | yes      | Name of the database owqner                    
- database_owner_passwor | yes      | Password for the database owner                
- connection_limit       | no       | Initial connection cout limit, defaults to 100 
+## .pgenv
+
+A property file, it contains un-escaped values for the master user name and password.
+`entrypoint.sh` will generate a correct `.pgpass` at run time.
+
+Keys and values are separated with a `=`. Comment lines, starting with a `#`, are ignored.
+
+
+| Property   | Required | Description                  |
+|------------|----------|------------------------------|
+| PGUSER     | yes      | Name of the master user      |
+| PGPASSWORD | yes      | Password for the master user |
+
+Mount the file at `/home/.pgenv`.
+
+## .pgpass
+
+A standard postgres [password file](https://www.postgresql.org/docs/16/libpq-pgpass.html), it needs only specify the master user
+and master user password and can use wildcard for the host, port and database.
+Note thay it _must_ apply the escaping rules.
+
+Mount the file at `/home/.pgpass`.
 
 # How to build
 
@@ -55,6 +77,6 @@ docker run -it --entrypoint bash postgres:16
 # Cleanup
 
 ```shell
-docker system prune
+docker system prune --volumes
 docker rmi arda-cards/postgres-database-initializer
 ```
