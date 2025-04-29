@@ -3,6 +3,7 @@
 readonly pgenv=/home/.pgenv
 export PGPASSFILE=/home/.pgpass
 
+# If an entry needs to contain : or \, escape this character with \
 pg_escape() {
   # shellcheck disable=SC2059
   printf "$(echo "${1}" |sed -e 's/\\/\\\\\\\\/g' -e 's/:/\\\\:/g')${2}"
