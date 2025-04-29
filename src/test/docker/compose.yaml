@@ -5,7 +5,7 @@ services:
     image: postgres:16-alpine3.20
     environment:
       POSTGRES_USER: "main-user"
-      POSTGRES_PASSWORD: "main-user-password"
+      POSTGRES_PASSWORD: "main\\user:password"
     healthcheck:
       test: "pg_isready -U main-user"
       interval: 1s
@@ -42,7 +42,7 @@ services:
       "psql",
       "-v", "ON_ERROR_STOP=on",
       "-f", "/home/test.sql",
-      "postgresql://test_db_owner:test_db_owner_pwd@postgres:5432/test_db"
+      "postgresql://test-db-owner:test_db_owner_pwd@postgres:5432/test_db"
     ]
     volumes:
       - "${PWD}/src/test/docker/test.sql:/home/test.sql"
@@ -55,7 +55,7 @@ services:
         condition: service_healthy
     command: "postgresql://postgres:5432"
     volumes:
-      - "${PWD}/src/test/docker/pgpass:/home/.pgpass"
+      - "${PWD}/src/test/docker/pgenv:/home/.pgenv"
       - "${PWD}/src/test/docker/values_all.properties:/home/values.properties"
   tester_all:
     image: postgres:16-alpine3.20

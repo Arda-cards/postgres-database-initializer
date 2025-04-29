@@ -18,6 +18,18 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
+## [2.1.0] - 2025-04-29
+
+### Added
+
+- The pgenv file is the preferred alternative to `.pgpass` file when user of password contains characters that must be quoted.
+
+### Fixed
+
+- In the `.pgpass`, if an entry needs to contain : or \, escape this character with \.
+- Quotes all SQL identifiers.
+- Parse the values file, do not source it
+
 ## [2.0.0] - 2025-04-24
 
 ### Changed

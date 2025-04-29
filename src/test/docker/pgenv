@@ -1,0 +1,3 @@
+# Alternative to .pgpass
+PGUSER=main-user
+PGPASSWORD=main\user:password
