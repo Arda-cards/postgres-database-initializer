@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-[ "${RUNNER_DEBUG}" == 1 ] && set -xv
+[ "${RUNNER_DEBUG}" = 1 ] && set -xv
 set -eu
 
 docker compose -f src/test/docker/compose.yaml down --remove-orphans --rmi local
@@ -13,3 +13,5 @@ docker compose -f src/test/docker/compose.yaml up --exit-code-from idempotency i
 docker compose -f src/test/docker/compose.yaml up --exit-code-from tester tester
 docker compose -f src/test/docker/compose.yaml up --exit-code-from sut_all sut_all
 docker compose -f src/test/docker/compose.yaml up --exit-code-from tester_all tester_all
+docker compose -f src/test/docker/compose.yaml up --exit-code-from teardown teardown
+docker compose -f src/test/docker/compose.yaml up --exit-code-from teardown_empty teardown_empty

@@ -1,3 +1,9 @@
+\echo 'Creating database' :"database_name" 'with role' :"database_role" 'for owner' :"database_owner"
+\echo
+
+SELECT * FROM pg_roles WHERE  rolname IN (:'database_owner', :'database_role');
+SELECT * FROM pg_database WHERE datname = :'database_name';
+
 SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'database_owner') AS is_user_defined;
 \gset
 
@@ -6,21 +12,19 @@ SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'database_owner') AS is_u
   \quit
 \endif
 
-\set database_role :database_name _role
-
--- Create the user
-CREATE USER :"database_owner" WITH PASSWORD :'database_owner_password';
-
--- Create the database
-CREATE DATABASE :"database_name"
-  CONNECTION_LIMIT = :connection_limit
-  OWNER = :"database_owner";
+\set ECHO all
 
 -- Create a role with the required permissions
 CREATE ROLE :"database_role";
 
--- Grant the role to the user
-GRANT :"database_role" TO :"database_owner";
+-- Create the user
+CREATE ROLE :"database_owner" WITH
+  LOGIN PASSWORD :'database_owner_password'
+  IN ROLE  :"database_role";
+
+CREATE DATABASE :"database_name" WITH
+  CONNECTION_LIMIT = :connection_limit
+  OWNER = :"database_owner";
 
 -- Grant the necessary permissions to the role
 GRANT CONNECT ON DATABASE :"database_name" TO :"database_role";

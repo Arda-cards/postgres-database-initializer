@@ -1,10 +1,22 @@
 # postgres-database-initializer
 
+[![version](https://img.shields.io/github/v/release/denisa/semantic-tag-helper?include*prereleases&sort=semver)](https://github.com/denisa/semantic-tag-helper/releases)
+[![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-informational)](https://semver.org/spec/v2.0.0.html)
+[![ci](https://github.com/Arda-cards/postgres-database-initializer/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/Arda-cards/postgres-database-initializer/actions/workflows/ci.yaml?query=branch%3Amain)
+
 Init container to create a Postgres database
 
 *Given* a Postgres connection string, `values.properties` and one of the two files `.pgenv` or `.pgpass`
 *When* the container runs with the two files mounted
 *Then* a database is created as configured by the `values.properties`
+
+## Command line argument
+
+`postgres-init-container` takes a optional command followed by the require postgresql URI.
+
+The optional command is `up` to create the database and its supporting roles, and `down` to destroy database and roles.
+
+See [compose.yaml](src/test/docker/compose.yaml) for examples.
 
 ## values.properties
 

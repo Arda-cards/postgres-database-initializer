@@ -29,7 +29,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: "postgresql://postgres:5432"
+    command:
+      - "up"
+      - "postgresql://postgres:5432"
     volumes:
       - "${PWD}/src/test/docker/pgpass:/home/.pgpass"
       - "${PWD}/src/test/docker/values_minimal.properties:/home/values.properties"
@@ -42,7 +44,7 @@ services:
       "psql",
       "-v", "ON_ERROR_STOP=on",
       "-f", "/home/test.sql",
-      "postgresql://test-db-owner:test_db_owner_pwd@postgres:5432/test_db"
+      "postgresql://scope.test-DB-owner:scope.test-DB=owner_pwd@postgres:5432/scope.test_DB"
     ]
     volumes:
       - "${PWD}/src/test/docker/test.sql:/home/test.sql"
@@ -70,3 +72,29 @@ services:
     ]
     volumes:
       - "${PWD}/src/test/docker/test_all.sql:/home/test.sql"
+  teardown:
+    image: "arda-cards/postgres-database-initializer"
+    build:
+      context: "${PWD}/src/main/docker"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - "down"
+      - "postgresql://postgres:5432"
+    volumes:
+      - "${PWD}/src/test/docker/pgpass:/home/.pgpass"
+      - "${PWD}/src/test/docker/values_minimal.properties:/home/values.properties"
+  teardown_empty:
+    image: "arda-cards/postgres-database-initializer"
+    build:
+      context: "${PWD}/src/main/docker"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - "down"
+      - "postgresql://postgres:5432"
+    volumes:
+      - "${PWD}/src/test/docker/pgpass:/home/.pgpass"
+      - "${PWD}/src/test/docker/values_minimal.properties:/home/values.properties"
