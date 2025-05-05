@@ -4,27 +4,45 @@
 SELECT * FROM pg_roles WHERE  rolname IN (:'database_owner', :'database_role');
 SELECT * FROM pg_database WHERE datname = :'database_name';
 
-SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'database_owner') AS is_user_defined;
+SELECT
+  EXISTS (SELECT 1 FROM pg_database WHERE datname = :'database_name') AS database_is_defined,
+  EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'database_owner') AS owner_is_defined,
+  EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'database_role') AS role_is_defined;
 \gset
-
-\if :is_user_defined
-  \echo 'User' :"database_owner" 'exists, assuming database' :"database_name" 'has been properly setup already'
-  \quit
-\endif
 
 \set ECHO all
 
--- Create a role with the required permissions
-CREATE ROLE :"database_role";
+-- Role
 
--- Create the user
-CREATE ROLE :"database_owner" WITH
-  LOGIN PASSWORD :'database_owner_password'
-  IN ROLE  :"database_role";
+\if :role_is_defined
+  \echo 'Role' :"database_role" 'exists, skipping creation'
+\else
+  CREATE ROLE :"database_role";
+\endif
 
-CREATE DATABASE :"database_name" WITH
-  CONNECTION_LIMIT = :connection_limit
-  OWNER = :"database_owner";
+-- Owner
+
+\if :owner_is_defined
+  \echo 'Role' :"database_owner" 'exists, skipping creation'
+\else
+  CREATE ROLE :"database_owner" WITH
+    LOGIN
+    IN ROLE :"database_role";
+\endif
+ALTER ROLE :"database_owner" WITH PASSWORD :'database_owner_password';
+
+-- Database
+
+ALTER ROLE :"database_owner" CREATEDB;
+SET ROLE :"database_owner";
+\if :database_is_defined
+  \echo 'Database' :"database_name" 'exists, skipping creation'
+\else
+  CREATE DATABASE :"database_name";
+\endif
+ALTER DATABASE :"database_name" WITH CONNECTION_LIMIT = :connection_limit;
+RESET ROLE;
+ALTER ROLE :"database_owner" NOCREATEDB;
 
 -- Grant the necessary permissions to the role
 GRANT CONNECT ON DATABASE :"database_name" TO :"database_role";

@@ -74,6 +74,12 @@ Then inspect the log.
 
 The script `tests.sh` runs all the integration tests.
 
+The *clean build* command is
+```shell
+docker system prune --volumes --force; ./tests.sh
+```
+The command purges the local docker installation from any temporary images, volumes, ...
+
 # How to use
 
 ```shell
