@@ -18,6 +18,20 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
+## [2.2.0] - 2025-05-05
+
+### Added
+
+- Optional command `up`, `down`, where `down` tears down the database.
+- Creation and destruction can be re-run and will apply only steps that haven't been applied yet.
+
+### Fixed
+
+- Handle passwords with `=`.
+- Verbose, fails on error.
+- Better test cases.
+- Fix the CI badge to only reflect builds on the main branch.
+
 ## [2.1.0] - 2025-04-29
 
 ### Added
