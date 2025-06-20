@@ -18,6 +18,12 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
+## [2.2.1] - 2025-06-19
+
+### Fixed
+
+- The *Version* badge, on the `README.md` was pointing at a different repository.
+
 ## [2.2.0] - 2025-05-05
 
 ### Added

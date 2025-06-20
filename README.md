@@ -1,6 +1,6 @@
 # postgres-database-initializer
 
-[![version](https://img.shields.io/github/v/release/denisa/semantic-tag-helper?include*prereleases&sort=semver)](https://github.com/denisa/semantic-tag-helper/releases)
+[![version](https://img.shields.io/github/v/release/Arda-cards/postgres-database-initializer?include*prereleases&sort=semver)](https://github.com/Arda-cards/postgres-database-initializer/releases)
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-informational)](https://semver.org/spec/v2.0.0.html)
 [![ci](https://github.com/Arda-cards/postgres-database-initializer/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/Arda-cards/postgres-database-initializer/actions/workflows/ci.yaml?query=branch%3Amain)
 
