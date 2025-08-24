@@ -18,6 +18,12 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
+## [2.2.2] - 2025-08-24
+
+### Fixed
+
+- Bump actions/checkout from 4 to 5
+
 ## [2.2.1] - 2025-06-19
 
 ### Fixed
@@ -37,12 +43,6 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
 - Verbose, fails on error.
 - Better test cases.
 - Fix the CI badge to only reflect builds on the main branch.
-
-## [2.1.1] - 2025-08-24
-
-### Fixed
-
-- Bump actions/checkout from 4 to 5
 
 ## [2.1.0] - 2025-04-29
 
