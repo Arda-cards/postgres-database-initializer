@@ -1,7 +1,7 @@
 # changelog
 
 [![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.0.0-informational)](https://keepachangelog.com/en/1.0.0/)
-[![Semantic Versioning](https://img.shields.io/badge/Sematic%20Versioning-2.0.0-informational)](https://semver.org/spec/v2.0.0.html)
+[![Semantic Versioning](https://img.shields.io/badge/Semantic%20Versioning-2.0.0-informational)](https://semver.org/spec/v2.0.0.html)
 ![clq validated](https://img.shields.io/badge/clq-validated-success)
 
 Keep the newest entry at top, format date according to ISO 8601: `YYYY-MM-DD`.
@@ -37,6 +37,12 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
 - Verbose, fails on error.
 - Better test cases.
 - Fix the CI badge to only reflect builds on the main branch.
+
+## [2.1.1] - 2025-08-24
+
+### Fixed
+
+- Bump actions/checkout from 4 to 5
 
 ## [2.1.0] - 2025-04-29
 
