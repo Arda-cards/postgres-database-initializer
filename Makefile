@@ -1,4 +1,4 @@
-.PHONY: build test clean
+.PHONY: build test clean usage
 .DEFAULT_GOAL := usage
 
 SOURCES := $(wildcard src/main/docker/*)
