@@ -23,8 +23,13 @@ if [ -f ${pgenv} ]; then
     pg_escape "${pg_pw}" "\n"
   } >${PGPASSFILE}
 else
-  echo "WARNING: Handling of user name with escapes is not supported"
-  pg_user="$(grep -v -e '^#' ${PGPASSFILE} | cut -d : -f 4)"
+  # Handle escaped colons (\:) and backslashes (\\) in .pgpass
+  bs_ph="<BS_ESCAPE>"
+  cl_ph="<CL_ESCAPE>"
+  pg_user="$(grep -v -e '^#' ${PGPASSFILE} | \
+    sed -e "s/\\\\\\\\/${bs_ph}/g" -e "s/\\\\:/${cl_ph}/g" | \
+    cut -d : -f 4 | \
+    sed -e "s/${cl_ph}/:/g" -e "s/${bs_ph}/\\\\/g")"
 fi
 chmod -f 0600 ${PGPASSFILE}
 

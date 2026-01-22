@@ -49,10 +49,19 @@ GRANT CONNECT ON DATABASE :"database_name" TO :"database_role";
 GRANT CREATE ON DATABASE :"database_name" TO :"database_role";
 GRANT TEMPORARY ON DATABASE :"database_name" TO :"database_role";
 
+\c :"database_name"
+
 -- Grant all privileges on all tables, sequences, and functions in the public schema
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO :"database_role";
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO :"database_role";
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO :"database_role";
+
+-- Create extensions while the `CREATE` role is enabled
+-- This needs to be done here as creating extensions requires superuser permissions, which the regular user does not have.
+-- Enable pg_trgm extension for fuzzy string matching
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- Enable btree_gin extension for types other than Strings.
+CREATE EXTENSION IF NOT EXISTS btree_gin;
 
 -- Revoke the ability to drop the database or create new users
 REVOKE CREATE ON DATABASE :"database_name" FROM :"database_owner";

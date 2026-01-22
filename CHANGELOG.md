@@ -18,6 +18,16 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
+## [2.3.0] - 2026-01-22
+
+### Added
+
+- Creation of postgres extensions in the `create.sql` file.
+- Convenience `make` targets for build and test.
+- Handling of escaped names
+- Clear Success/Fail error messages in `tests.sh`.
+
+
 ## [2.2.2] - 2025-08-24
 
 ### Fixed
@@ -65,7 +75,7 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
 ### Fixed
 
 - Extracted the test sequence to `tests.sh` got local and remote execution
-- Silently ignore failure to make `.pgpass` read-only; while this is required for docker-compose, this is not needed for k8s 
+- Silently ignore failure to make `.pgpass` read-only; while this is required for docker-compose, this is not needed for k8s
 - Install only the postgres client package on a fresh alpine:3.22 image and reduce the image size from 358 to 22MB
 - The database role is now always set to the concatenation of the database name with `_role`
 - Ensure that images are published only on main or on a feature branch with a feature branch version
