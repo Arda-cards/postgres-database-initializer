@@ -6,9 +6,9 @@ set -eu
 run() {
   "$@"
   exit_code=$?
-  if [ $exit_code -ne 0 ]; then
+  if [ "$exit_code" -ne 0 ]; then
     echo "FAIL: $*"
-    exit $exit_code
+    exit "$exit_code"
   fi
 }
 
