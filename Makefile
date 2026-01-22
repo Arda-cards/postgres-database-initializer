@@ -1,7 +1,7 @@
 .PHONY: build test clean
 .DEFAULT_GOAL := usage
 
-SOURCES := src/main/docker
+SOURCES := $(wildcard src/main/docker/*)
 TEST_SOURCES := src/test/docker
 
 
@@ -25,4 +25,4 @@ test: build $(TEST_SOURCES)
 clean:
 	@clear
 	rm -rf out
-	docker system prune --volumes --force; ./tests.sh
+	docker system prune --volumes --force
