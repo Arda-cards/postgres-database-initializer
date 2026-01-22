@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 [ "${RUNNER_DEBUG}" = 1 ] && set -xv
-set -u
+set -eu
 
 run() {
   "$@"
