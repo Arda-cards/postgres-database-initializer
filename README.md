@@ -25,7 +25,7 @@ A property file, it contains un-escaped values to define the database to be crea
 Keys and values are separated with a `=`. Comment lines, starting with a `#`, are ignored.
 
 | Property               | Required | Description                                    |
-|------------------------|----------|------------------------------------------------|
+| ---------------------- | -------- | ---------------------------------------------- |
 | database_name          | yes      | Name of the database                           |
 | database_owner         | yes      | Name of the database owner                     |
 | database_owner_passwor | yes      | Password for the database owner                |
@@ -42,7 +42,7 @@ Keys and values are separated with a `=`. Comment lines, starting with a `#`, ar
 
 
 | Property   | Required | Description                  |
-|------------|----------|------------------------------|
+| ---------- | -------- | ---------------------------- |
 | PGUSER     | yes      | Name of the master user      |
 | PGPASSWORD | yes      | Password for the master user |
 
@@ -59,13 +59,23 @@ Mount the file at `/home/.pgpass`.
 # How to build
 
 ```shell
-docker buildx build src/main/docker --tag arda-carda/postgres-database-initializer
+docker buildx build src/main/docker --tag arda-cards/postgres-database-initializer
 ```
+Alternative:
+```shell
+make build
+```
+
 
 # How to test
 
 ```shell
 docker compose -f src/test/docker/compose.yaml up --renew-anon-volumes
+```
+
+Alternative:
+```shell
+make test
 ```
 
 This will build the image if not present.
