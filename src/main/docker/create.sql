@@ -56,8 +56,8 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO :"database_role";
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO :"database_role";
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO :"database_role";
 
--- Create extensions while the `CREATE` role is enabled
--- This needs to be done here as creating extensions requires superuser permissions, which the regular user does not have.
+-- Create extensions as the current psql user (typically a superuser) after connecting to the database.
+-- This is done here because creating these extensions requires superuser privileges that the application roles do not have.
 -- Enable pg_trgm extension for fuzzy string matching
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- Enable btree_gin extension for types other than Strings.
