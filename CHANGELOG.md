@@ -25,6 +25,7 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
 - Bump `actions/checkout` from 5 to 6
 - Bump `docker/build-push-action` from 6 to 7
 - Bump `docker/login-action` from 3 to 4
+- Bump `docker/setup-buildx-action` from 3 to 4
 
 ## [2.3.0] - 2026-01-22
 
