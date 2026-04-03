@@ -26,20 +26,37 @@ else
   # Handle escaped colons (\:) and backslashes (\\) in .pgpass
   bs_ph="<BS_ESCAPE>"
   cl_ph="<CL_ESCAPE>"
-  pg_user="$(grep -v -e '^#' ${PGPASSFILE} | \
-    sed -e "s/\\\\\\\\/${bs_ph}/g" -e "s/\\\\:/${cl_ph}/g" | \
-    cut -d : -f 4 | \
+  pg_user="$(grep -v -e '^#' ${PGPASSFILE} |
+    sed -e "s/\\\\\\\\/${bs_ph}/g" -e "s/\\\\:/${cl_ph}/g" |
+    cut -d : -f 4 |
     sed -e "s/${cl_ph}/:/g" -e "s/${bs_ph}/\\\\/g")"
 fi
 chmod -f 0600 ${PGPASSFILE}
 
 readonly values=/home/values.properties
+normalized_extensions=
+for extension in $(
+    echo "pg_trgm,x,$(sed -n -e 's/^extensions=//p' "${values}")" |
+    awk -F',' '{ for (i = 1; i <= NF; i++) { gsub(/^[[:space:]]+|[[:space:]]+$/, "", $i); if ($i != "") print $i } }' |
+    sort -u \
+  ); do
+  if ! printf '%s' "${extension}" | grep -Eq '^[A-Za-z_][A-Za-z0-9_]*$'; then
+    echo "Invalid extension name: ${extension}"
+    exit 1
+  fi
+  if [ -n "${normalized_extensions}" ]; then
+    normalized_extensions="${normalized_extensions},${extension}"
+  else
+    normalized_extensions="${extension}"
+  fi
+done
 {
   echo "\set database_name '$(sed -n -e 's/^database_name=//p' "${values}")'"
   echo "\set database_owner '$(sed -n -e 's/^database_owner=//p' "${values}")'"
   echo "\set database_owner_password '$(sed -n -e 's/^database_owner_password=//p' "${values}")'"
   connection_limit=$(sed -n -e 's/^connection_limit=//p' "${values}" | cut -d = -f 2)
   echo "\set connection_limit ${connection_limit:-100}"
+  echo "\set extensions '${normalized_extensions}'"
 } >/home/values.sql
 
 command=/home/create.sql

@@ -18,11 +18,17 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
-## [2.3.1] - 2026-04-03
+## [2.4.0] - 2026-04-03
+
+### Added
+
+- Introduce an optional `extensions` configuration in the `values.properties` file to specify additional Postgres extensions to be created.
+  The `pg_trgm` and `btree_gin` extensions are always included by default.
 
 ### Fixed
 
 - Bump `actions/checkout` from 5 to 6
+- Bump `alpine` from 3.20 to 3.23
 
 ## [2.3.0] - 2026-01-22
 
