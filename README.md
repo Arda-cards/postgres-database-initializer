@@ -24,13 +24,13 @@ A property file, it contains un-escaped values to define the database to be crea
 
 Keys and values are separated with a `=`. Comment lines, starting with a `#`, are ignored.
 
-| Property                | Required | Description                                                                                          |
-|-------------------------|----------|------------------------------------------------------------------------------------------------------|
-| database_name           | yes      | Name of the database                                                                                 |
-| database_owner          | yes      | Name of the database owner                                                                           |
-| database_owner_password | yes      | Password for the database owner                                                                      |
-| connection_limit        | no       | Initial connection count limit, defaults to 100                                                      |
-| extensions              | no       | Comma-separated names of Postgres extension to create; `pg_trgm` and `btree_gin` are always included |
+| Property                | Required | Description                                                                                           |
+|-------------------------|----------|-------------------------------------------------------------------------------------------------------|
+| database_name           | yes      | Name of the database                                                                                  |
+| database_owner          | yes      | Name of the database owner                                                                            |
+| database_owner_password | yes      | Password for the database owner                                                                       |
+| connection_limit        | no       | Initial connection count limit, defaults to 100                                                       |
+| extensions              | no       | Comma-separated names of Postgres extensions to create; `pg_trgm` and `btree_gin` are always included |
 
 Mount the file at `/home/values.properties`.
 

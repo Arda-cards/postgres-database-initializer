@@ -60,7 +60,7 @@ GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO :"database_role";
 -- This is done here because creating these extensions requires superuser privileges that the application roles do not have.
 SELECT format('CREATE EXTENSION IF NOT EXISTS %I', btrim(extension_name))
 FROM regexp_split_to_table(:'extensions', ',') AS extension_name
-WHERE btrim(extension_name) <> '';
+WHERE btrim(extension_name) <> ''
 \gexec
 
 -- Revoke the ability to drop the database or create new users
