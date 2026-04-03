@@ -130,7 +130,7 @@ jobs:
             echo "tag=${tag}" >>"${GITHUB_OUTPUT}"
           fi
       - id: build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: src/main/docker
           load: true
@@ -158,7 +158,7 @@ jobs:
           fi
       - name: Build and push
         if: steps.define-build.outputs.kind == 'publish'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: src/main/docker
           platforms: linux/amd64,linux/arm64

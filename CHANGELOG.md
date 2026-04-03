@@ -23,6 +23,7 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
 ### Fixed
 
 - Bump `actions/checkout` from 5 to 6
+- Bump `docker/build-push-action` from 6 to 7
 
 ## [2.3.0] - 2026-01-22
 
