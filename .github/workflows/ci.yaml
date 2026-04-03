@@ -17,7 +17,7 @@ jobs:
       contents: write
       packages: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "Configure git client"
         shell: bash
         run: |
