@@ -24,12 +24,13 @@ A property file, it contains un-escaped values to define the database to be crea
 
 Keys and values are separated with a `=`. Comment lines, starting with a `#`, are ignored.
 
-| Property               | Required | Description                                    |
-| ---------------------- | -------- | ---------------------------------------------- |
-| database_name          | yes      | Name of the database                           |
-| database_owner         | yes      | Name of the database owner                     |
-| database_owner_passwor | yes      | Password for the database owner                |
-| connection_limit       | no       | Initial connection cout limit, defaults to 100 |
+| Property                | Required | Description                                                                                           |
+|-------------------------|----------|-------------------------------------------------------------------------------------------------------|
+| database_name           | yes      | Name of the database                                                                                  |
+| database_owner          | yes      | Name of the database owner                                                                            |
+| database_owner_password | yes      | Password for the database owner                                                                       |
+| connection_limit        | no       | Initial connection count limit, defaults to 100                                                       |
+| extensions              | no       | Comma-separated names of Postgres extensions to create; `pg_trgm` and `btree_gin` are always included |
 
 Mount the file at `/home/values.properties`.
 
@@ -40,9 +41,8 @@ A property file, it contains un-escaped values for the master user name and pass
 
 Keys and values are separated with a `=`. Comment lines, starting with a `#`, are ignored.
 
-
 | Property   | Required | Description                  |
-| ---------- | -------- | ---------------------------- |
+|------------|----------|------------------------------|
 | PGUSER     | yes      | Name of the master user      |
 | PGPASSWORD | yes      | Password for the master user |
 
@@ -61,11 +61,12 @@ Mount the file at `/home/.pgpass`.
 ```shell
 docker buildx build src/main/docker --tag arda-cards/postgres-database-initializer
 ```
+
 Alternative:
+
 ```shell
 make build
 ```
-
 
 # How to test
 
@@ -74,6 +75,7 @@ docker compose -f src/test/docker/compose.yaml up --renew-anon-volumes
 ```
 
 Alternative:
+
 ```shell
 make test
 ```
@@ -85,9 +87,11 @@ Then inspect the log.
 The script `tests.sh` runs all the integration tests.
 
 The *clean build* command is
+
 ```shell
 docker system prune --volumes --force; ./tests.sh
 ```
+
 The command purges the local docker installation from any temporary images, volumes, ...
 
 # How to use

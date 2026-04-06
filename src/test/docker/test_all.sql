@@ -15,3 +15,17 @@ BEGIN
     END IF;
 END;
 $$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm') THEN
+        RAISE EXCEPTION 'Extension pg_trgm was not created';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'btree_gin') THEN
+        RAISE EXCEPTION 'Extension btree_gin was not created';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'btree_gist') THEN
+        RAISE EXCEPTION 'Extension btree_gist was not created';
+    END IF;
+END;
+$$;
