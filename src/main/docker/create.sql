@@ -63,6 +63,26 @@ FROM regexp_split_to_table(:'extensions', ',') AS extension_name
 WHERE btrim(extension_name) <> ''
 \gexec
 
+-- Verify pg_stat_statements is functional, not just installed. On modern
+-- Postgres (16+), `CREATE EXTENSION pg_stat_statements` succeeds even
+-- when `shared_preload_libraries` is missing the entry — the schema
+-- objects get installed but the underlying shared-memory hash is never
+-- allocated, so queries against the view error out with
+-- `pg_stat_statements must be loaded via shared_preload_libraries`.
+--
+-- The explicit `SELECT count(*) ...` below exercises the view so the
+-- error surfaces at init time (fail-loud), instead of silently going
+-- dark until a downstream operator queries it. `ON_ERROR_STOP on` then
+-- aborts the init script and the pod enters `Init:CrashLoopBackOff`,
+-- prompting cluster-config review.
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
+        PERFORM count(*) FROM pg_stat_statements;
+    END IF;
+END;
+$$;
+
 -- Revoke the ability to drop the database or create new users
 REVOKE CREATE ON DATABASE :"database_name" FROM :"database_owner";
 REVOKE CREATE ON DATABASE :"database_name" FROM :"database_role";

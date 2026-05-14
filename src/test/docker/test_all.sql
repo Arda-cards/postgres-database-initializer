@@ -27,5 +27,8 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'btree_gist') THEN
         RAISE EXCEPTION 'Extension btree_gist was not created';
     END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
+        RAISE EXCEPTION 'Extension pg_stat_statements was not created';
+    END IF;
 END;
 $$;

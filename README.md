@@ -30,9 +30,15 @@ Keys and values are separated with a `=`. Comment lines, starting with a `#`, ar
 | database_owner          | yes      | Name of the database owner                                                                            |
 | database_owner_password | yes      | Password for the database owner                                                                       |
 | connection_limit        | no       | Initial connection count limit, defaults to 100                                                       |
-| extensions              | no       | Comma-separated names of Postgres extensions to create; `pg_trgm` and `btree_gin` are always included |
+| extensions              | no       | Comma-separated names of Postgres extensions to create; `pg_trgm`, `btree_gin`, and `pg_stat_statements` are always included |
 
 Mount the file at `/home/values.properties`.
+
+### Cluster prerequisite for `pg_stat_statements`
+
+The image always attempts to create the `pg_stat_statements` extension in the application database. This requires the Postgres cluster to have `pg_stat_statements` listed in its `shared_preload_libraries` (typically set via an Aurora DB-cluster parameter group + instance restart, or a `postgres -c shared_preload_libraries=pg_stat_statements` argument on plain Postgres).
+
+If the prerequisite is not satisfied, the init container fails with `ERROR: pg_stat_statements must be loaded via shared_preload_libraries` and the pod enters `Init:CrashLoopBackOff` until the cluster configuration is corrected. This is deliberate — the failure is bounded to at most one occurrence per cluster (once the preload is set, every subsequent initialization succeeds), and the fail-loud surface guarantees the observability data is actually available before downstream consumers start relying on it.
 
 ## .pgenv
 
