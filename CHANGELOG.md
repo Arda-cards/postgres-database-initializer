@@ -18,6 +18,20 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
+## [2.5.0] - 2026-05-14
+
+### Added
+
+- `pg_stat_statements` joins `pg_trgm` and `btree_gin` in the default extensions floor.
+  The extension is now created in every application database the initializer provisions,
+  making slow-query observability data reachable without a disconnect/reconnect to the
+  admin database.
+  Cluster prerequisite: the Postgres cluster must include `pg_stat_statements` in its
+  `shared_preload_libraries` (Aurora parameter group + restart, or `postgres -c …` on
+  plain Postgres). If the prerequisite is missing the init container fails fast —
+  deliberately, to keep observability data from silently going dark on downstream
+  consumers. See Arda PDEV-498 for the motivating use case.
+
 ## [2.4.0] - 2026-04-03
 
 ### Added

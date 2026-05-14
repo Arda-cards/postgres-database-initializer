@@ -3,6 +3,29 @@ name: integration-test
 services:
   postgres:
     image: postgres:16-alpine3.20
+    # `shared_preload_libraries=pg_stat_statements` is required for the
+    # initializer's verify query against pg_stat_statements to succeed.
+    # CREATE EXTENSION itself works without the preload on PG 16+ (the
+    # schema objects install fine), but querying the view fails until
+    # the library is preloaded — and the initializer deliberately fails
+    # loud in that case (see CHANGELOG 2.5.0).
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+    environment:
+      POSTGRES_USER: "main-user"
+      POSTGRES_PASSWORD: "main\\user:password"
+    healthcheck:
+      test: "pg_isready -U main-user"
+      interval: 1s
+      start_period: 5s
+      retries: 10
+  # Mirror of `postgres` *without* the shared_preload_libraries override,
+  # used by `sut_no_preload` to verify the initializer fails-loud when
+  # the cluster prerequisite for pg_stat_statements is missing.
+  postgres_no_preload:
+    image: postgres:16-alpine3.20
     environment:
       POSTGRES_USER: "main-user"
       POSTGRES_PASSWORD: "main\\user:password"
@@ -95,6 +118,20 @@ services:
     command:
       - "down"
       - "postgresql://postgres:5432"
+    volumes:
+      - "${PWD}/src/test/docker/pgpass:/home/.pgpass"
+      - "${PWD}/src/test/docker/values_minimal.properties:/home/values.properties"
+  # Targets postgres_no_preload (without shared_preload_libraries) — the
+  # initializer is expected to fail loud here. `tests.sh` inverts the
+  # exit-code expectation for this service.
+  sut_no_preload:
+    image: "arda-cards/postgres-database-initializer"
+    build:
+      context: "${PWD}/src/main/docker"
+    depends_on:
+      postgres_no_preload:
+        condition: service_healthy
+    command: "postgresql://postgres_no_preload:5432"
     volumes:
       - "${PWD}/src/test/docker/pgpass:/home/.pgpass"
       - "${PWD}/src/test/docker/values_minimal.properties:/home/values.properties"

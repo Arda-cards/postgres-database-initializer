@@ -37,3 +37,20 @@ BEGIN
     END IF;
 END;
 $$;
+
+-- Default extensions floor: every database the initializer provisions
+-- gets pg_trgm, btree_gin, and pg_stat_statements created in it.
+SELECT * FROM pg_extension;
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm') THEN
+        RAISE EXCEPTION 'Extension pg_trgm was not created';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'btree_gin') THEN
+        RAISE EXCEPTION 'Extension btree_gin was not created';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
+        RAISE EXCEPTION 'Extension pg_stat_statements was not created';
+    END IF;
+END;
+$$;

@@ -36,7 +36,7 @@ chmod -f 0600 ${PGPASSFILE}
 readonly values=/home/values.properties
 normalized_extensions=
 for extension in $(
-    echo "pg_trgm,btree_gin,$(sed -n -e 's/^extensions=//p' "${values}")" |
+    echo "pg_trgm,btree_gin,pg_stat_statements,$(sed -n -e 's/^extensions=//p' "${values}")" |
     awk -F',' '{ for (i = 1; i <= NF; i++) { gsub(/^[[:space:]]+|[[:space:]]+$/, "", $i); if ($i != "") print $i } }' |
     sort -u \
   ); do
