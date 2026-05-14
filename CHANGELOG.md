@@ -18,7 +18,7 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
-## [2.5.0-jmpicnic-pdev498] - 2026-05-14
+## [2.5.0] - 2026-05-14
 
 ### Added
 
