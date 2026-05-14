@@ -26,14 +26,29 @@ run docker compose -f src/test/docker/compose.yaml up --exit-code-from teardown 
 run docker compose -f src/test/docker/compose.yaml up --exit-code-from teardown_empty teardown_empty
 
 # Fail-loud verification: when shared_preload_libraries does not include
-# pg_stat_statements, the initializer must exit non-zero (the default
-# extensions floor includes pg_stat_statements and CREATE EXTENSION
-# errors out without the preload).
-echo ">>> Fail-loud verification (sut_no_preload — expected to exit non-zero)"
-if docker compose -f src/test/docker/compose.yaml up --exit-code-from sut_no_preload sut_no_preload; then
+# pg_stat_statements, the initializer must exit non-zero AND the failure
+# must surface the specific preload-missing Postgres error. CREATE
+# EXTENSION itself succeeds on PG 16+ — the failure comes from the
+# verify query in create.sql that queries pg_stat_statements. Asserting
+# the error string (not just a non-zero exit) prevents an unrelated
+# build / dependency / daemon failure from masquerading as a passing
+# negative test.
+echo ">>> Fail-loud verification (sut_no_preload — expected preload-missing error)"
+no_preload_log="$(mktemp)"
+if docker compose -f src/test/docker/compose.yaml up --exit-code-from sut_no_preload sut_no_preload >"$no_preload_log" 2>&1; then
   echo "FAIL: sut_no_preload exited 0 but was expected to fail (pg_stat_statements not preloaded)"
+  cat "$no_preload_log"
+  rm -f "$no_preload_log"
   exit 1
 fi
-echo ">>> PASS: sut_no_preload exited non-zero as expected"
+if ! grep -q "pg_stat_statements must be loaded via shared_preload_libraries" "$no_preload_log"; then
+  echo "FAIL: sut_no_preload exited non-zero but did not surface the expected preload-missing error"
+  echo "      Expected substring: 'pg_stat_statements must be loaded via shared_preload_libraries'"
+  cat "$no_preload_log"
+  rm -f "$no_preload_log"
+  exit 1
+fi
+rm -f "$no_preload_log"
+echo ">>> PASS: sut_no_preload failed with the expected preload-missing error"
 
 echo ">>> SUCCESS <<<"

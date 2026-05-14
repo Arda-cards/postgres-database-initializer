@@ -70,15 +70,16 @@ WHERE btrim(extension_name) <> ''
 -- allocated, so queries against the view error out with
 -- `pg_stat_statements must be loaded via shared_preload_libraries`.
 --
--- The explicit `SELECT count(*) ...` below exercises the view so the
+-- The bounded `PERFORM ... LIMIT 1` below exercises the view so the
 -- error surfaces at init time (fail-loud), instead of silently going
 -- dark until a downstream operator queries it. `ON_ERROR_STOP on` then
 -- aborts the init script and the pod enters `Init:CrashLoopBackOff`,
--- prompting cluster-config review.
+-- prompting cluster-config review. `LIMIT 1` keeps the check cheap on
+-- clusters with a large `pg_stat_statements.max`.
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
-        PERFORM count(*) FROM pg_stat_statements;
+        PERFORM 1 FROM pg_stat_statements LIMIT 1;
     END IF;
 END;
 $$;

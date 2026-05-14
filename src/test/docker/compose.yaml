@@ -3,9 +3,12 @@ name: integration-test
 services:
   postgres:
     image: postgres:16-alpine3.20
-    # `shared_preload_libraries=pg_stat_statements` is required so that
-    # CREATE EXTENSION pg_stat_statements succeeds — the initializer
-    # now always tries to create this extension (see CHANGELOG 2.5.0).
+    # `shared_preload_libraries=pg_stat_statements` is required for the
+    # initializer's verify query against pg_stat_statements to succeed.
+    # CREATE EXTENSION itself works without the preload on PG 16+ (the
+    # schema objects install fine), but querying the view fails until
+    # the library is preloaded — and the initializer deliberately fails
+    # loud in that case (see CHANGELOG 2.5.0).
     command:
       - "postgres"
       - "-c"
